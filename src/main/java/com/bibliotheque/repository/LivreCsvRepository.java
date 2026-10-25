@@ -48,4 +48,31 @@ public class LivreCsvRepository implements LivreRepository {
 
         return livres;
     }
+
+    @Override
+    public List<Livre> rechercherLivres(String recherche) throws IOException {
+        List<Livre> livres = chargerLivres();
+        List<Livre> resultats = new ArrayList<>();
+
+        if (recherche == null || recherche.isBlank()) {
+            return resultats;
+        }
+
+        String motCle = recherche.trim().toLowerCase();
+
+        for (Livre livre : livres) {
+            boolean titreCorrespond =
+                    livre.getTitre().toLowerCase().contains(motCle);
+
+            boolean auteurCorrespond =
+                    livre.getAuteur().toLowerCase().contains(motCle);
+
+            if (titreCorrespond || auteurCorrespond) {
+                resultats.add(livre);
+            }
+        }
+
+        return resultats;
+    }
+
 }
