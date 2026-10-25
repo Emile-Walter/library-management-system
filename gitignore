@@ -1,0 +1,11 @@
+# Fichiers compilés Java
+target/
+out/
+*.class
+
+# Configuration IntelliJ
+.idea/
+*.iml
+
+# Fichiers temporaires
+*.log
