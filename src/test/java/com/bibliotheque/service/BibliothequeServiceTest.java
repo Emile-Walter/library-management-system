@@ -1,3 +1,4 @@
+
 package com.bibliotheque.service;
 
 import com.bibliotheque.exception.LivreIndisponibleException;
@@ -38,7 +39,8 @@ class BibliothequeServiceTest {
     }
 
     @Test
-    void emprunterDeuxFoisLeMemeLivreDeclencheUneException() throws Exception {
+    void emprunterDeuxFoisLeMemeLivreDeclencheUneException()
+            throws Exception {
         BibliothequeService service = new BibliothequeService();
         Livre livre = new Livre("ISBN-003", "Candide", "Voltaire");
 

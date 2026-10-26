@@ -48,11 +48,11 @@ public class AdherentRepositoryImpl implements AdherentRepository {
             return resultats;
         }
 
-        String recherche = nom.trim().toLowerCase();
+        String recherche = nom.trim().toLowerCase(java.util.Locale.ROOT);
 
         for (Adherent adherent : adherents) {
             if (adherent.getNom() != null
-                    && adherent.getNom().toLowerCase()
+                    && adherent.getNom().toLowerCase(java.util.Locale.ROOT)
                     .contains(recherche)) {
                 resultats.add(adherent);
             }

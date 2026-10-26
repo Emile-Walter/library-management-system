@@ -43,6 +43,14 @@ class LivreCsvRepositoryTest {
                 repository.rechercherLivres("Antoine");
 
         assertFalse(resultats.isEmpty());
+
+        assertTrue(
+                resultats.stream().anyMatch(
+                        livre -> livre.getAuteur()
+                                .toLowerCase()
+                                .contains("antoine")
+                )
+        );
     }
 
     @Test
@@ -53,5 +61,23 @@ class LivreCsvRepositoryTest {
                 repository.rechercherLivres("LivreInexistantXYZ");
 
         assertTrue(resultats.isEmpty());
+    }
+
+    @Test
+    void rechercheIgnoreLesMajuscules() throws IOException {
+        LivreCsvRepository repository = new LivreCsvRepository();
+
+        List<Livre> resultats =
+                repository.rechercherLivres("PETIT PRINCE");
+
+        assertEquals(1, resultats.size());
+    }
+
+    @Test
+    void rechercheVideRetourneListeVide() throws IOException {
+        LivreCsvRepository repository = new LivreCsvRepository();
+
+        assertTrue(repository.rechercherLivres("").isEmpty());
+        assertTrue(repository.rechercherLivres("   ").isEmpty());
     }
 }
