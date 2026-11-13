@@ -1,38 +1,48 @@
-
 package com.bibliotheque.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
-public class Emprunt {
-
+public final class Emprunt {
     private final Adherent adherent;
     private final Livre livre;
     private final LocalDate dateEmprunt;
-    private LocalDate dateRetour;
+    private final LocalDate dateEcheance;
+    private final LocalDate dateRetour;
 
-    public Emprunt(Adherent adherent, Livre livre) {
-        if (adherent == null) {
-            throw new IllegalArgumentException(
-                    "L'adhérent ne peut pas être null."
-            );
+    public Emprunt(Adherent adherent, Livre livre, LocalDate dateEmprunt,
+                   LocalDate dateEcheance, LocalDate dateRetour) {
+        this.adherent = Objects.requireNonNull(adherent, "Adhérent requis.");
+        this.livre = Objects.requireNonNull(livre, "Livre requis.");
+        this.dateEmprunt = Objects.requireNonNull(dateEmprunt, "Date d'emprunt requise.");
+        this.dateEcheance = Objects.requireNonNull(dateEcheance, "Date d'échéance requise.");
+        if (dateEcheance.isBefore(dateEmprunt)) {
+            throw new IllegalArgumentException("L'échéance précède la date d'emprunt.");
         }
-
-        if (livre == null) {
-            throw new IllegalArgumentException(
-                    "Le livre ne peut pas être null."
-            );
+        if (dateRetour != null && dateRetour.isBefore(dateEmprunt)) {
+            throw new IllegalArgumentException("La date de retour précède la date d'emprunt.");
         }
+        this.dateRetour = dateRetour;
+    }
 
-        if (!livre.emprunter()) {
-            throw new IllegalStateException(
-                    "Ce livre n'est pas disponible."
-            );
+    public static Emprunt ouvrir(Adherent adherent, Livre livre, LocalDate date) {
+        if (!livre.estDisponible()) {
+            throw new IllegalStateException("Ce livre est déjà emprunté.");
         }
+        LocalDate echeance = date.plusDays(adherent.dureeEmpruntJours());
+        return new Emprunt(adherent, avecDisponibilite(livre, false), date, echeance, null);
+    }
 
-        this.adherent = adherent;
-        this.livre = livre;
-        this.dateEmprunt = LocalDate.now();
-        this.dateRetour = null;
+    public Emprunt cloturer(LocalDate date) {
+        Objects.requireNonNull(date, "Date de retour requise.");
+        if (!estEnCours()) {
+            throw new IllegalStateException("Cet emprunt est déjà clôturé.");
+        }
+        return new Emprunt(adherent, avecDisponibilite(livre, true), dateEmprunt, dateEcheance, date);
+    }
+
+    private static Livre avecDisponibilite(Livre livre, boolean disponible) {
+        return new Livre(livre.getIsbn(), livre.getTitre(), livre.getAuteur(), disponible);
     }
 
     public Adherent getAdherent() {
@@ -47,24 +57,15 @@ public class Emprunt {
         return dateEmprunt;
     }
 
+    public LocalDate getDateEcheance() {
+        return dateEcheance;
+    }
+
     public LocalDate getDateRetour() {
         return dateRetour;
     }
 
     public boolean estEnCours() {
         return dateRetour == null;
-    }
-
-    public boolean retournerLivre() {
-        if (!estEnCours()) {
-            return false;
-        }
-
-        if (livre.retourner()) {
-            dateRetour = LocalDate.now();
-            return true;
-        }
-
-        return false;
     }
 }

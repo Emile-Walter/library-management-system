@@ -1,102 +1,55 @@
-
 # Gestion de bibliothèque
 
-Application console Java permettant de consulter les livres d'une bibliothèque,
-d'emprunter des livres et de les retourner.
+Application console en Java 17 pour gérer les adhérents et les emprunts d’une bibliothèque. Cette bêta locale contient six livres fictifs, chacun disponible en un seul exemplaire.
 
-## Fonctionnalités
+## Lancer l’application
 
-- Affichage des livres et de leur disponibilité
-- Emprunt et retour d'un livre à partir de son ISBN
-- Gestion des erreurs : livre introuvable ou déjà emprunté
-- Chargement des livres depuis SQLite au démarrage
-- Enregistrement de la disponibilité des livres dans SQLite
-- Chargement et recherche de livres depuis un fichier CSV
-- Tests automatisés avec JUnit 5
+**Dans IntelliJ IDEA** ouvrez le dossier qui contient le [`pom.xml`](pom.xml), sélectionnez le JDK 17 et laissez Maven importer les dépendances. Ouvrez ensuite [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte.
 
-## Technologies
-
-- Java 17
-- Maven
-- SQLite
-- JUnit 5
-- IntelliJ IDEA
-
-## Prérequis
-
-- JDK 17
-- Maven, ou Maven intégré à IntelliJ IDEA
-
-## Lancer l'application
-
-1. Ouvrir le projet dans IntelliJ IDEA.
-2. Vérifier que le projet utilise Java 17.
-3. Attendre que Maven télécharge les dépendances.
-4. Ouvrir `src/main/java/com/bibliotheque/Main.java`.
-5. Faire un clic droit et choisir `Run 'Main.main()'`.
-
-La base de données SQLite est initialisée au démarrage.
-
-## Utiliser le menu
-
-- Entrer `1` pour afficher les livres.
-- Entrer `2` pour emprunter un livre, puis saisir son ISBN.
-- Entrer `3` pour retourner un livre, puis saisir son ISBN.
-- Entrer `0` pour quitter.
-
-## Fichier CSV
-
-Le fichier de livres est situé dans :
-
-`src/main/resources/livres.csv`
-
-Format attendu :
-
-```csv
-isbn,titre,auteur
-ISBN-001,Le Petit Prince,Antoine de Saint-Exupéry
-ISBN-002,Les Misérables,Victor Hugo
-ISBN-003,Candide,Voltaire
-```
-
-La première ligne contient les noms des colonnes.
-
-## Base de données
-
-Le projet utilise SQLite. Le fichier `bibliotheque.db` est créé à partir de la configuration de connexion.
-
-La table `livres` conserve notamment l'ISBN, le titre, l'auteur et la disponibilité.
-
-## Exécuter les tests
-
-Dans IntelliJ IDEA :
-
-1. Ouvrir `src/test/java`.
-2. Faire un clic droit sur le dossier ou sur une classe de test.
-3. Choisir `Run`.
-
-Les tests utilisent JUnit 5.
-
-## Compiler le projet avec Maven
-
-Dans le terminal à la racine du projet :
+**Dans un terminal** avec le JDK 17 et Maven, exécutez cette commande depuis le dossier du projet. Le premier lancement peut nécessiter une connexion pour télécharger les dépendances et les plugins.
 
 ```bash
-mvn clean test
+mvn compile exec:java
 ```
 
-Cette commande nettoie les fichiers compilés et exécute les tests.
+L’application crée `bibliotheque-beta.db` dans le dossier courant et conserve les adhérents et les emprunts entre deux lancements. L’ancienne base `bibliotheque.db` utilise un schéma différent. Gardez-la à part et utilisez la base de la bêta. Pour essayer une nouvelle base, choisissez un nom de fichier encore libre dans cette commande PowerShell.
 
-## Structure du projet
+```powershell
+mvn compile exec:java '-Dexec.args=autre-bibliotheque.db'
+```
 
-- `model` : classes représentant les données, notamment `Livre`
-- `service` : logique métier de la bibliothèque
-- `repository` : accès aux données CSV et SQLite
-- `database` : connexion et initialisation SQLite
-- `exception` : exceptions personnalisées
-- `Main.java` : point d'entrée de l'application
-- `src/test/java` : tests automatisés
+Sous Windows, si le plugin `exec` ne peut pas être téléchargé et que Maven a déjà mis le pilote SQLite en cache, vous pouvez lancer le projet directement avec Java. Ces commandes PowerShell utilisent le dossier Maven standard.
 
-## Auteur
+```powershell
+mvn -o compile
+$sqlite = Join-Path $env:USERPROFILE '.m2/repository/org/xerial/sqlite-jdbc/3.49.1.0/sqlite-jdbc-3.49.1.0.jar'
+java '-Dfile.encoding=UTF-8' -cp "target/classes;$sqlite" com.bibliotheque.Main
+```
 
-Projet réalisé dans le cadre de l'apprentissage de la programmation orientée objet en Java.
+## Essayer les fonctionnalités
+
+1. **Catalogue et recherche.** Tapez `1` pour afficher les livres ou `4` pour rechercher par titre, auteur ou identifiant. La recherche ignore la casse et les accents.
+2. **Inscription.** Tapez `5`, puis saisissez un nom, un prénom, une adresse e-mail et un profil (`1` étudiant ou `2` enseignant). Notez l’identifiant attribué ou retrouvez-le avec `6`.
+3. **Emprunt et retour.** Tapez `2`, puis saisissez `FIC-001` et l’identifiant de l’adhérent. Utilisez `7` suivi de son identifiant pour consulter l’historique. Tapez `3`, puis `FIC-001`, pour rendre le livre.
+4. **Retards.** Tapez `8` pour afficher les emprunts encore actifs dont l’échéance est dépassée. Tapez `0` pour quitter.
+
+Un étudiant peut avoir jusqu’à trois emprunts actifs pendant 14 jours chacun. Un enseignant peut en avoir jusqu’à cinq pendant 28 jours chacun. Une fois le livre rendu, il redevient disponible et l’emprunt reste dans l’historique.
+
+## Classes et choix techniques
+
+1. **Responsabilités distinctes.** [`Main`](src/main/java/com/bibliotheque/Main.java) assemble l’application, [`ConsoleBibliotheque`](src/main/java/com/bibliotheque/ui/ConsoleBibliotheque.java) gère le menu et [`BibliothequeService`](src/main/java/com/bibliotheque/service/BibliothequeService.java) orchestre les opérations. Le service reçoit l’interface [`StockageBibliotheque`](src/main/java/com/bibliotheque/repository/StockageBibliotheque.java) et une horloge injectable. Cela applique la responsabilité unique et l’inversion des dépendances, et permet de tester les échéances avec une date fixe.
+2. **Héritage et polymorphisme.** Les classes abstraites [`Personne`](src/main/java/com/bibliotheque/model/Personne.java) et [`Adherent`](src/main/java/com/bibliotheque/model/Adherent.java) regroupent les coordonnées et les règles communes. [`Etudiant`](src/main/java/com/bibliotheque/model/Etudiant.java) et [`Enseignant`](src/main/java/com/bibliotheque/model/Enseignant.java) définissent chacun leur quota et leur durée. Le contrôle du quota et le calcul de l’échéance utilisent le contrat d’`Adherent` pour les deux profils, ce qui illustre le principe de substitution de Liskov. Java exécute les méthodes correspondant au profil réel.
+3. **Catalogue CSV.** [`LivreCsvRepository`](src/main/java/com/bibliotheque/repository/LivreCsvRepository.java) implémente [`LivreRepository`](src/main/java/com/bibliotheque/repository/LivreRepository.java) et transforme le fichier [`livres.csv`](src/main/resources/livres.csv) en objets [`Livre`](src/main/java/com/bibliotheque/model/Livre.java) à chaque démarrage. Le fichier UTF-8 contient les colonnes `isbn,titre,auteur`. Les identifiants sont fictifs et chaque champ utilise du texte simple sans virgule. Le catalogue est enregistré au premier démarrage réussi de chaque base. Après une modification du CSV, lancez l’application avec un nouveau fichier de base pour charger le catalogue modifié.
+4. **Persistance SQLite.** [`BibliothequeSQLiteRepository`](src/main/java/com/bibliotheque/repository/BibliothequeSQLiteRepository.java) conserve le catalogue, les adhérents et les objets [`Emprunt`](src/main/java/com/bibliotheque/model/Emprunt.java). Il vérifie la disponibilité et le quota dans la même transaction que l’enregistrement de l’emprunt. La disponibilité découle de la présence d’un emprunt actif, ce qui évite de stocker cette information deux fois.
+
+## Exceptions
+
+[`BibliothequeException`](src/main/java/com/bibliotheque/exception/BibliothequeException.java) représente les erreurs métier, par exemple un quota atteint, une adresse déjà utilisée ou un retour sans emprunt actif. [`LivreIntrouvableException`](src/main/java/com/bibliotheque/exception/LivreIntrouvableException.java) et [`LivreIndisponibleException`](src/main/java/com/bibliotheque/exception/LivreIndisponibleException.java) précisent les erreurs liées aux livres. Le menu affiche les erreurs de saisie, métier et SQLite.
+
+## Tests
+
+```bash
+mvn test
+```
+
+Les tests JUnit couvrent le [service et les opérations d’emprunt](src/test/java/com/bibliotheque/service/BibliothequeServiceTest.java), le [modèle et les dates](src/test/java/com/bibliotheque/model/EmpruntTest.java) et le [chargement du catalogue](src/test/java/com/bibliotheque/repository/LivreCsvRepositoryTest.java).

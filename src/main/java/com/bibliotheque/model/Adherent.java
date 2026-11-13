@@ -1,50 +1,39 @@
-
 package com.bibliotheque.model;
 
-public class Adherent {
+public abstract class Adherent extends Personne {
+    private final int id;
+    private final TypeAdherent type;
 
-    private int id;
-    private String nom;
-    private String prenom;
-    private String email;
-
-    public Adherent(int id, String nom, String prenom, String email) {
+    protected Adherent(int id, String nom, String prenom, String email, TypeAdherent type) {
+        super(nom, prenom, email);
+        if (id <= 0) {
+            throw new IllegalArgumentException("L'identifiant de l'adhérent doit être positif.");
+        }
         this.id = id;
-        this.nom = nom;
-        this.prenom = prenom;
-        this.email = email;
+        this.type = type;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getNom() {
-        return nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public TypeAdherent getType() {
+        return type;
     }
 
     @Override
-    public String toString() {
-        return id + " - " + prenom + " " + nom + " (" + email + ")";
+    public String getRole() {
+        return type.getLibelle();
+    }
+
+    public abstract int dureeEmpruntJours();
+
+    public abstract int nombreMaxEmprunts();
+
+    public boolean peutEncoreEmprunter(int empruntsEnCours) {
+        if (empruntsEnCours < 0) {
+            throw new IllegalArgumentException("Le nombre d'emprunts en cours doit être positif ou nul.");
+        }
+        return empruntsEnCours < nombreMaxEmprunts();
     }
 }

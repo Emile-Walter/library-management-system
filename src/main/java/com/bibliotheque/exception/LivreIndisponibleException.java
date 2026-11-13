@@ -1,6 +1,6 @@
 package com.bibliotheque.exception;
 
-public class LivreIndisponibleException extends Exception {
+public final class LivreIndisponibleException extends BibliothequeException {
     public LivreIndisponibleException(String message) {
         super(message);
     }
