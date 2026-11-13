@@ -14,6 +14,8 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public final class ConsoleBibliotheque {
+    private static final String NOM_BIBLIOTHEQUE = "Walter Bibliothèque";
+
     private final BibliothequeService service;
     private final Scanner entree;
     private final PrintStream sortie;
@@ -25,7 +27,7 @@ public final class ConsoleBibliotheque {
     }
 
     public void lancer() {
-        sortie.println("Bienvenue dans la bibliothèque !");
+        sortie.println("Bienvenue à " + NOM_BIBLIOTHEQUE + " !");
         while (true) {
             afficherMenu();
             try {
@@ -48,7 +50,7 @@ public final class ConsoleBibliotheque {
     private void afficherMenu() {
         sortie.println("""
 
-                ===== BIBLIOTHÈQUE =====
+                ===== %s =====
                 1. Afficher le catalogue
                 2. Emprunter un livre
                 3. Retourner un livre
@@ -57,7 +59,7 @@ public final class ConsoleBibliotheque {
                 6. Afficher les adhérents
                 7. Afficher l'historique d'un adhérent
                 8. Afficher les emprunts en retard
-                0. Quitter""");
+                0. Quitter""".formatted(NOM_BIBLIOTHEQUE));
     }
 
     private void executer(String choix) throws BibliothequeException, SQLException {

@@ -1,4 +1,4 @@
-# Gestion de bibliothèque
+# Walter Bibliothèque
 
 Application console en Java 17 pour gérer les adhérents et les emprunts d’une bibliothèque. Cette bêta locale contient six livres fictifs, chacun disponible en un seul exemplaire.
 
