@@ -4,9 +4,8 @@ Walter Bibliothèque est un projet de programmation orientée objet en Java 17. 
 
 ## Démarrage rapide
 
-1. Sur cette page GitHub, choisissez **Code → Download ZIP**, puis extrayez le ZIP.
-2. Dans IntelliJ IDEA, ouvrez le dossier qui contient le [`pom.xml`](pom.xml), sélectionnez **Java 17** comme SDK du projet et attendez l’import Maven.
-3. Ouvrez [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte. Si IntelliJ utilise un autre JDK, choisissez **Java 17** dans le champ **JRE** de **Run → Edit Configurations → Main**.
+1. Dans IntelliJ IDEA, ouvrez le dossier qui contient le [`pom.xml`](pom.xml), sélectionnez **Java 17** comme SDK du projet et attendez l’import Maven.
+2. Ouvrez [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte. Si IntelliJ utilise un autre JDK, choisissez **Java 17** dans le champ **JRE** de **Run → Edit Configurations → Main**.
 
 Depuis un terminal avec le JDK 17 et Maven, lancez `mvn compile exec:java` dans le dossier qui contient `pom.xml`. Une connexion est nécessaire au premier lancement pour télécharger les dépendances si elles sont absentes du cache Maven.
 
