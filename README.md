@@ -2,43 +2,24 @@
 
 Walter Bibliothèque est un projet de programmation orientée objet en Java 17. L’application console permet de consulter un catalogue, d’inscrire des adhérents et de suivre les emprunts et les retards. Le catalogue de démonstration contient six livres fictifs, chacun en un exemplaire.
 
-## Lancer l’application
+## Démarrage rapide
 
-### Dans IntelliJ IDEA
+1. Sur cette page GitHub, choisissez **Code → Download ZIP**, puis extrayez le ZIP.
+2. Dans IntelliJ IDEA, ouvrez le dossier qui contient le [`pom.xml`](pom.xml), sélectionnez **Java 17** comme SDK du projet et attendez l’import Maven.
+3. Ouvrez [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte. Si IntelliJ utilise un autre JDK, choisissez **Java 17** dans le champ **JRE** de **Run → Edit Configurations → Main**.
 
-1. Ouvrez le dossier qui contient le [`pom.xml`](pom.xml) et attendez la fin de l’import Maven. Si vous partez d’un ZIP, extrayez-le d’abord.
-2. Dans **File → Project Structure → Project**, sélectionnez **Java 17** comme SDK du projet.
-3. Ouvrez [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte. Si une configuration **Main** existe déjà, vérifiez son champ **JRE** dans **Run → Edit Configurations**. Sélectionnez **Java 17** ou le SDK du projet.
-4. Dans le panneau **Run**, saisissez `1` puis **Entrée** pour afficher le catalogue.
+Depuis un terminal avec le JDK 17 et Maven, lancez `mvn compile exec:java` dans le dossier qui contient `pom.xml`. Une connexion est nécessaire au premier lancement pour télécharger les dépendances si elles sont absentes du cache Maven.
 
-### Dans un terminal
-
-Depuis le dossier du projet, vérifiez que `java -version` et `mvn -version` indiquent Java 17. Le premier lancement Maven peut nécessiter une connexion pour télécharger les dépendances et les plugins.
-
-```bash
-mvn compile exec:java
-```
-
-L’application crée `bibliotheque-beta.db` dans le dossier courant et conserve les adhérents et les emprunts entre deux lancements. L’ancienne base `bibliotheque.db` utilise un schéma différent. Gardez-la à part et utilisez la base de la bêta. Pour essayer une nouvelle base, choisissez un nom de fichier encore libre dans cette commande PowerShell.
-
-```powershell
-mvn compile exec:java '-Dexec.args=autre-bibliotheque.db'
-```
-
-Sous Windows, si le plugin `exec` ne peut pas être téléchargé et que Maven a déjà mis le pilote SQLite en cache, vous pouvez lancer le projet directement avec Java. Ces commandes PowerShell utilisent le dossier Maven standard.
-
-```powershell
-mvn -o compile
-$sqlite = Join-Path $env:USERPROFILE '.m2/repository/org/xerial/sqlite-jdbc/3.49.1.0/sqlite-jdbc-3.49.1.0.jar'
-java '-Dfile.encoding=UTF-8' -cp "target/classes;$sqlite" com.bibliotheque.Main
-```
+L’application crée `bibliotheque-beta.db` au démarrage pour conserver les adhérents et les emprunts.
 
 ## Essayer les fonctionnalités
 
-1. **Catalogue et recherche.** Tapez `1` pour afficher les livres ou `4` pour rechercher par titre, auteur ou identifiant. La recherche ignore la casse et les accents.
-2. **Inscription.** Tapez `5`, puis saisissez un nom, un prénom, une adresse e-mail et un profil (`1` étudiant ou `2` enseignant). Notez l’identifiant attribué ou retrouvez-le avec `6`.
-3. **Emprunt et retour.** Tapez `2`, puis saisissez `FIC-001` et l’identifiant de l’adhérent. Utilisez `7` suivi de son identifiant pour consulter l’historique. Tapez `3`, puis `FIC-001`, pour rendre le livre.
-4. **Retards.** Tapez `8` pour afficher les emprunts encore actifs dont l’échéance est dépassée. Tapez `0` pour quitter.
+Dans la console, validez chaque saisie avec **Entrée**.
+
+1. Tapez `1` pour afficher le catalogue. L’option `4` recherche par titre, auteur ou identifiant.
+2. Tapez `5` et saisissez un nom, un prénom, un e-mail et le profil `1` (étudiant) ou `2` (enseignant). Notez l’identifiant attribué. L’option `6` affiche les adhérents inscrits.
+3. Tapez `2`, puis `FIC-001` et l’identifiant de l’adhérent. L’application affiche l’échéance. L’option `8` liste les prêts actifs en retard.
+4. Tapez `3`, puis `FIC-001` pour rendre le livre. Tapez `7`, puis l’identifiant de l’adhérent pour consulter l’historique. Tapez `0` pour quitter.
 
 Un étudiant peut avoir jusqu’à trois emprunts actifs pendant 14 jours chacun. Un enseignant peut en avoir jusqu’à cinq pendant 28 jours chacun. Une fois le livre rendu, il redevient disponible et l’emprunt reste dans l’historique.
 
@@ -54,6 +35,8 @@ Un étudiant peut avoir jusqu’à trois emprunts actifs pendant 14 jours chacun
 [`BibliothequeException`](src/main/java/com/bibliotheque/exception/BibliothequeException.java) représente les erreurs métier, par exemple un quota atteint, une adresse déjà utilisée ou un retour sans emprunt actif. [`LivreIntrouvableException`](src/main/java/com/bibliotheque/exception/LivreIntrouvableException.java) et [`LivreIndisponibleException`](src/main/java/com/bibliotheque/exception/LivreIndisponibleException.java) précisent les erreurs liées aux livres. Le menu affiche les erreurs de saisie, métier et SQLite.
 
 ## Tests
+
+Dans le dossier qui contient `pom.xml`, exécutez la commande suivante.
 
 ```bash
 mvn test
