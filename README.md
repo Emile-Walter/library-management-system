@@ -1,12 +1,19 @@
 # Walter Bibliothèque
 
-Application console en Java 17 pour gérer les adhérents et les emprunts d’une bibliothèque. Cette bêta locale contient six livres fictifs, chacun disponible en un seul exemplaire.
+Walter Bibliothèque est un projet de programmation orientée objet en Java 17. L’application console permet de consulter un catalogue, d’inscrire des adhérents et de suivre les emprunts et les retards. Le catalogue de démonstration contient six livres fictifs, chacun en un exemplaire.
 
 ## Lancer l’application
 
-**Dans IntelliJ IDEA** ouvrez le dossier qui contient le [`pom.xml`](pom.xml), sélectionnez le JDK 17 et laissez Maven importer les dépendances. Ouvrez ensuite [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte.
+### Dans IntelliJ IDEA
 
-**Dans un terminal** avec le JDK 17 et Maven, exécutez cette commande depuis le dossier du projet. Le premier lancement peut nécessiter une connexion pour télécharger les dépendances et les plugins.
+1. Ouvrez le dossier qui contient le [`pom.xml`](pom.xml) et attendez la fin de l’import Maven. Si vous partez d’un ZIP, extrayez-le d’abord.
+2. Dans **File → Project Structure → Project**, sélectionnez **Java 17** comme SDK du projet.
+3. Ouvrez [`Main.java`](src/main/java/com/bibliotheque/Main.java) et lancez `Main.main()` avec la flèche verte. Si une configuration **Main** existe déjà, vérifiez son champ **JRE** dans **Run → Edit Configurations**. Sélectionnez **Java 17** ou le SDK du projet.
+4. Dans le panneau **Run**, saisissez `1` puis **Entrée** pour afficher le catalogue.
+
+### Dans un terminal
+
+Depuis le dossier du projet, vérifiez que `java -version` et `mvn -version` indiquent Java 17. Le premier lancement Maven peut nécessiter une connexion pour télécharger les dépendances et les plugins.
 
 ```bash
 mvn compile exec:java
